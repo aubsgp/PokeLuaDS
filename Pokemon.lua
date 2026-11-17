@@ -1,109 +1,111 @@
 local Error = require("LuaDS.Error")
 local Bitwise = require("LuaDS.Bitwise")
 local Array = require("LuaDS.Array")
+local OrderedTable = require("LuaDS.OrderedTable")
 local Mirror = require("LuaDS.Mirror")
 
 local Data = require("PokeLuaDS.PokeData")
+local Mail = require("PokeLuaDS.Mail")
 
-local Metadata = Mirror:extend({
-    personality     = {0x00, 4},
+local Metadata = Mirror:extend(OrderedTable:new(
+    "personality",     {0x00, 4},
 
-    encryptionFlags = {0x04, 2},
-    partyDecrypted  = {0x04, 0, 0, 1},
-    boxDecrypted    = {0x04, 0, 1, 1},
-    checksumFailed  = {0x04, 0, 2, 1},
+    "encryptionFlags", {0x04, 2},
+    "partyDecrypted",  {0x04, 0, 0, 1},
+    "boxDecrypted",    {0x04, 0, 1, 1},
+    "checksumFailed",  {0x04, 0, 2, 1},
 
-    checksum        = {0x06, 2},
-})
+    "checksum",        {0x06, 2}
+))
 
-local BoxPokemon = Mirror:extend({
-    metadata = {0x00, Metadata},
+local BoxPokemon = Mirror:extend(OrderedTable:new(
+    "metadata", {0x00, Metadata},
 
 
     -- Block A
-    species        = {Metadata.SIZE + 0x00, 2},
-    heldItem       = {Metadata.SIZE + 0x02, 2},
-    otID           = {Metadata.SIZE + 0x04, 4},
-    exp            = {Metadata.SIZE + 0x08, 4},
-    friendship     = {Metadata.SIZE + 0x0C, 1},
-    ability        = {Metadata.SIZE + 0x0D, 1},
-    markings       = {Metadata.SIZE + 0x0E, 1},
-    originLanguage = {Metadata.SIZE + 0x0F, 1},
+    "species",        {Metadata.SIZE + 0x00, 2},
+    "heldItem",       {Metadata.SIZE + 0x02, 2},
+    "otID",           {Metadata.SIZE + 0x04, 4},
+    "exp",            {Metadata.SIZE + 0x08, 4},
+    "friendship",     {Metadata.SIZE + 0x0C, 1},
+    "ability",        {Metadata.SIZE + 0x0D, 1},
+    "markings",       {Metadata.SIZE + 0x0E, 1},
+    "originLanguage", {Metadata.SIZE + 0x0F, 1},
 
-    evs            = {Metadata.SIZE + 0x10, Array:extend(6, 1)},
-    hpEV           = {Metadata.SIZE + 0x10, 1},
-    atkEV          = {Metadata.SIZE + 0x11, 1},
-    defEV          = {Metadata.SIZE + 0x12, 1},
-    speedEV        = {Metadata.SIZE + 0x13, 1},
-    spAtkEV        = {Metadata.SIZE + 0x14, 1},
-    spDefEV        = {Metadata.SIZE + 0x15, 1},
+    "evs",            {Metadata.SIZE + 0x10, Array, 6, 1},
+    "hpEV",           {Metadata.SIZE + 0x10, 1},
+    "atkEV",          {Metadata.SIZE + 0x11, 1},
+    "defEV",          {Metadata.SIZE + 0x12, 1},
+    "speedEV",        {Metadata.SIZE + 0x13, 1},
+    "spAtkEV",        {Metadata.SIZE + 0x14, 1},
+    "spDefEV",        {Metadata.SIZE + 0x15, 1},
 
-    contestStats   = {Metadata.SIZE + 0x16, Array:extend(6, 1)},
-    cool           = {Metadata.SIZE + 0x16, 1},
-    beauty         = {Metadata.SIZE + 0x17, 1},
-    cute           = {Metadata.SIZE + 0x18, 1},
-    smart          = {Metadata.SIZE + 0x19, 1},
-    tough          = {Metadata.SIZE + 0x1A, 1},
-    sheen          = {Metadata.SIZE + 0x1B, 1},
+    "contestStats",   {Metadata.SIZE + 0x16, Array, 6, 1},
+    "cool",           {Metadata.SIZE + 0x16, 1},
+    "beauty",         {Metadata.SIZE + 0x17, 1},
+    "cute",           {Metadata.SIZE + 0x18, 1},
+    "smart",          {Metadata.SIZE + 0x19, 1},
+    "tough",          {Metadata.SIZE + 0x1A, 1},
+    "sheen",          {Metadata.SIZE + 0x1B, 1},
 
-    ribbonsDS1     = {Metadata.SIZE + 0x1C, 4},
+    "ribbonsDS1",     {Metadata.SIZE + 0x1C, 4},
 
 
     -- Block B
-    moves              = {Metadata.SIZE + 0x20, Array:extend(4, 2)},
-    moveCurrentPPs     = {Metadata.SIZE + 0x28, Array:extend(4, 1)},
-    movePPUps          = {Metadata.SIZE + 0x2C, Array:extend(4, 1)},
+    "moves",              {Metadata.SIZE + 0x20, Array, 4, 2},
+    "moveCurrentPPs",     {Metadata.SIZE + 0x28, Array, 4, 1},
+    "movePPUps",          {Metadata.SIZE + 0x2C, Array, 4, 1},
 
-    ivs                = {Metadata.SIZE + 0x30, 4},
-    hpIV               = {Metadata.SIZE + 0x30, 0, 0, 5},
-    atkIV              = {Metadata.SIZE + 0x30, 0, 5, 5},
-    defIV              = {Metadata.SIZE + 0x30, 0, 10, 5},
-    speedIV            = {Metadata.SIZE + 0x30, 0, 15, 5},
-    spAtkIV            = {Metadata.SIZE + 0x30, 0, 20, 5},
-    spDefIV            = {Metadata.SIZE + 0x30, 0, 25, 5},
-    isEgg              = {Metadata.SIZE + 0x30, 0, 30, 1},
-    hasNickname        = {Metadata.SIZE + 0x30, 0, 31, 1},
+    "ivs",                {Metadata.SIZE + 0x30, 4},
+    "hpIV",               {Metadata.SIZE + 0x30, 0, 0, 5},
+    "atkIV",              {Metadata.SIZE + 0x30, 0, 5, 5},
+    "defIV",              {Metadata.SIZE + 0x30, 0, 10, 5},
+    "speedIV",            {Metadata.SIZE + 0x30, 0, 15, 5},
+    "spAtkIV",            {Metadata.SIZE + 0x30, 0, 20, 5},
+    "spDefIV",            {Metadata.SIZE + 0x30, 0, 25, 5},
+    "isEgg",              {Metadata.SIZE + 0x30, 0, 30, 1},
+    "hasNickname",        {Metadata.SIZE + 0x30, 0, 31, 1},
 
-    ribbonsGBA         = {Metadata.SIZE + 0x34, 4},
+    "ribbonsGBA",         {Metadata.SIZE + 0x34, 4},
 
-    genderForm         = {Metadata.SIZE + 0x38, 1},
-    fatefulEncounter   = {Metadata.SIZE + 0x38, 0, 0, 1},
-    gender             = {Metadata.SIZE + 0x38, 0, 1, 2},
-    form               = {Metadata.SIZE + 0x38, 0, 3, 5},
+    "genderForm",         {Metadata.SIZE + 0x38, 1},
+    "fatefulEncounter",   {Metadata.SIZE + 0x38, 0, 0, 1},
+    "gender",             {Metadata.SIZE + 0x38, 0, 1, 2},
+    "form",               {Metadata.SIZE + 0x38, 0, 3, 5},
 
-    unused1            = {Metadata.SIZE + 0x39, 1}, -- First 6 bits track Shiny Leaves from HGSS.
-    unused2            = {Metadata.SIZE + 0x3A, 2},
-    EggLocation_PtHGSS = {Metadata.SIZE + 0x3C, 2},
-    MetLocation_PtHGSS = {Metadata.SIZE + 0x3E, 2},
+    "unused1",            {Metadata.SIZE + 0x39, 1}, -- First 6 bits track Shiny Leaves from HGSS.
+    "unused2",            {Metadata.SIZE + 0x3A, 2},
+    "EggLocation_PtHGSS", {Metadata.SIZE + 0x3C, 2},
+    "MetLocation_PtHGSS", {Metadata.SIZE + 0x3E, 2},
 
 
     -- Block C
-    nickname   = {Metadata.SIZE + 0x40, Array:extend(11, 2)},
-    unused3    = {Metadata.SIZE + 0x56, 1},
-    originGame = {Metadata.SIZE + 0x57, 1},
-    ribbonsDS2 = {Metadata.SIZE + 0x58, 8},
+    "nickname",   {Metadata.SIZE + 0x40, Array, 11, 2},
+    "unused3",    {Metadata.SIZE + 0x56, 1},
+    "originGame", {Metadata.SIZE + 0x57, 1},
+    "ribbonsDS2", {Metadata.SIZE + 0x58, 8},
 
 
     -- Block D
-    otName           = {Metadata.SIZE + 0x60, Array:extend(8, 2)},
-    eggYear          = {Metadata.SIZE + 0x70, 1},
-    eggMonth         = {Metadata.SIZE + 0x71, 1},
-    eggDay           = {Metadata.SIZE + 0x72, 1},
-    metYear          = {Metadata.SIZE + 0x73, 1},
-    metMonth         = {Metadata.SIZE + 0x74, 1},
-    metDay           = {Metadata.SIZE + 0x75, 1},
-    EggLocation_DP   = {Metadata.SIZE + 0x76, 2},
-    MetLocation_DP   = {Metadata.SIZE + 0x78, 2},
-    pokerus          = {Metadata.SIZE + 0x7A, 1},
-    pokeball         = {Metadata.SIZE + 0x7B, 1},
+    "otName",           {Metadata.SIZE + 0x60, Array, 8, 2},
+    "eggYear",          {Metadata.SIZE + 0x70, 1},
+    "eggMonth",         {Metadata.SIZE + 0x71, 1},
+    "eggDay",           {Metadata.SIZE + 0x72, 1},
+    "metYear",          {Metadata.SIZE + 0x73, 1},
+    "metMonth",         {Metadata.SIZE + 0x74, 1},
+    "metDay",           {Metadata.SIZE + 0x75, 1},
+    "EggLocation_DP",   {Metadata.SIZE + 0x76, 2},
+    "MetLocation_DP",   {Metadata.SIZE + 0x78, 2},
+    "pokerus",          {Metadata.SIZE + 0x7A, 1},
+    "pokeball",         {Metadata.SIZE + 0x7B, 1},
 
-    metLevelOTGender = {Metadata.SIZE + 0x7C, 1},
-    metLevel         = {Metadata.SIZE + 0x7C, 0, 0, 7},
-    otGender         = {Metadata.SIZE + 0x7C, 0, 7, 1},
+    "metLevelOTGender", {Metadata.SIZE + 0x7C, 1},
+    "metLevel",         {Metadata.SIZE + 0x7C, 0, 0, 7},
+    "otGender",         {Metadata.SIZE + 0x7C, 0, 7, 1},
 
-    metTerrain       = {Metadata.SIZE + 0x7D, 1},
-    unused4          = {Metadata.SIZE + 0x7E, 2},
-})
+    "metTerrain",       {Metadata.SIZE + 0x7D, 1},
+    "unused4",          {Metadata.SIZE + 0x7E, 2}
+))
 
 function BoxPokemon:compute_shuffle()
     local shift_val = Bitwise.rshift(Bitwise.band(self.metadata.personality, 0x3E000), 13) % 24
@@ -182,26 +184,26 @@ function BoxPokemon:write_to_memory(addr)
     return true
 end
 
-local PartyPokemon = Mirror:extend({
-    boxPokemon = {0x00, BoxPokemon},
+local PartyPokemon = Mirror:extend(OrderedTable:new(
+    "boxPokemon",    {0x00, BoxPokemon},
 
-    status        = {BoxPokemon.SIZE + 0x00, 4},
-    level         = {BoxPokemon.SIZE + 0x04, 1},
-    ballCapsuleID = {BoxPokemon.SIZE + 0x05, 1},
-    hp            = {BoxPokemon.SIZE + 0x06, 2},
+    "status",        {BoxPokemon.SIZE + 0x00, 4},
+    "level",         {BoxPokemon.SIZE + 0x04, 1},
+    "ballCapsuleID", {BoxPokemon.SIZE + 0x05, 1},
+    "hp",            {BoxPokemon.SIZE + 0x06, 2},
 
-    stats         = {BoxPokemon.SIZE + 0x08, Array:extend(6, 2)},
-    maxHP         = {BoxPokemon.SIZE + 0x08, 2},
-    attack        = {BoxPokemon.SIZE + 0x0A, 2},
-    defense       = {BoxPokemon.SIZE + 0x0C, 2},
-    speed         = {BoxPokemon.SIZE + 0x0E, 2},
-    spAtk         = {BoxPokemon.SIZE + 0x10, 2},
-    spDef         = {BoxPokemon.SIZE + 0x12, 2},
+    "stats",         {BoxPokemon.SIZE + 0x08, Array, 6, 2},
+    "maxHP",         {BoxPokemon.SIZE + 0x08, 2},
+    "attack",        {BoxPokemon.SIZE + 0x0A, 2},
+    "defense",       {BoxPokemon.SIZE + 0x0C, 2},
+    "speed",         {BoxPokemon.SIZE + 0x0E, 2},
+    "spAtk",         {BoxPokemon.SIZE + 0x10, 2},
+    "spDef",         {BoxPokemon.SIZE + 0x12, 2},
 
-    -- skip mail for now
+    "mail",          {BoxPokemon.SIZE + 0x14, Mail} 
 
-    ballCapsule   = {BoxPokemon.SIZE + 0x4C, Array:extend(8, 3)}
-})
+    "ballCapsule",   {BoxPokemon.SIZE + Mail.SIZE + 0x014, Array, 8, 3}
+))
 
 function PartyPokemon:encrypt()
     return self.data:encrypt(self.boxPokemon.metadata.personality, BoxPokemon.SIZE, PartyPokemon.SIZE)

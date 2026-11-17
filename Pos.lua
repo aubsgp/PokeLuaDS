@@ -1,14 +1,14 @@
 -- Coordinates as Fx32 (fixed point 32-bit) values. 1 bit for the sign, then 19 bits for the integer portion, then 12 decimal bits. Graphics coordinates use these in the game's engine.
 -- Note that each tile is 16 (=2^4) pixels.
-local here = (...):match("(.-)[^%.]+$")
 local Data = require("LuaDS.Data")
+local OrderedTable = require("LuaDS.OrderedTable")
 local Mirror = require("LuaDS.Mirror")
 
-local Pos = Mirror:extend({
-    x = {0x00, 4},
-    y = {0x04, 4},
-    z = {0x08, 4},
-})
+local Pos = Mirror:extend(OrderedTable:new(
+    "x", {0x00, 4},
+    "y", {0x04, 4},
+    "z", {0x08, 4}
+))
 Pos.Fx32_ONE = 0x00001000
 
 function Pos:blank()
